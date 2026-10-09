@@ -1,1 +1,2 @@
-Python packages for bot
+discord.py
+python-dotenv
