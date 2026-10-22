@@ -1,8 +1,11 @@
 import discord
 import os
 
+from dotenv import load_dotenv
 from welcomemessage import send_welcome_message
+from events import send_event_message
 
+load_dotenv()
 
 # --------------------------------------------------
 # INTENTS / BOT SETUP
@@ -67,6 +70,10 @@ async def on_message(message):
             message.channel,
             message.author
         )
+
+    elif message.content.lower() == "!testevent":
+
+        await send_event_message(message.channel)
 
 
 # --------------------------------------------------
