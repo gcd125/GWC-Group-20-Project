@@ -13,7 +13,7 @@ The goal is to create a beginner-friendly, practical tool that helps members nav
 - Gabriella Delgadillo - Project Mentor
 - Melanie — Team Member
 - Gabriela — Team Member
-- Member 3 — Team Member
+- Ananya — Team Member
 
 ## Technologies
 - Python
