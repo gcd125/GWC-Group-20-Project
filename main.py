@@ -1,6 +1,5 @@
 import discord
 import os
-from discord import app_commands
 
 from dotenv import load_dotenv
 from welcomemessage import send_welcome_message
@@ -22,10 +21,6 @@ functionalities.message_content = True
 
 
 client = discord.Client(intents=functionalities)
-
-# adding /event to command directory
-tree = app_commands.CommandTree(client)
-tree.add_command(event_group)
 
 # --------------------------------------------------
 # MAKE SURE BOT IS ON AND CONNECTED
