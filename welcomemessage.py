@@ -6,10 +6,7 @@ from registration import RegistrationView
 async def send_welcome_message(channel, member):
 
 
-    thumbnail = discord.File(
-        "Visuals/gwc_thumbnail.png",
-        filename="gwc_thumbnail.png"
-    )
+    
 
     embed = discord.Embed(
         title="✨ Welcome to Girls Who Code @ UCF ✨",
@@ -36,9 +33,7 @@ async def send_welcome_message(channel, member):
         )
     )
 
-    embed.set_thumbnail(
-        url="attachment://gwc_thumbnail.png"
-    )
+    
 
     embed.set_image(
         url="attachment://welcome_banner.png"
@@ -49,7 +44,6 @@ async def send_welcome_message(channel, member):
     )
 
     await channel.send(
-        files=[thumbnail],
         embed=embed,
         view=RegistrationView(member.id)
     )

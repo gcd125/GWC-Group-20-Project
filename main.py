@@ -1,8 +1,16 @@
 import discord
+import sqlite3
 import os
+from discord.ext import commands
 
+from dotenv import load_dotenv
+load_dotenv()
+
+from points import get_points
+from points import get_leaderboard
 from welcomemessage import send_welcome_message
 
+DISCORD_GUILD_ID = discord.Object(id=int(os.environ["DISCORD_GUILD_ID"]))
 
 # --------------------------------------------------
 # INTENTS / BOT SETUP
@@ -17,7 +25,7 @@ functionalities.members = True
 functionalities.message_content = True
 
 
-client = discord.Client(intents=functionalities)
+client = commands.Bot(command_prefix='!', intents=functionalities)
 
 
 # --------------------------------------------------
@@ -27,6 +35,9 @@ client = discord.Client(intents=functionalities)
 @client.event
 async def on_ready():
     print(f"Logged in as {client.user}")
+    
+    synced = await client.tree.sync(guild=DISCORD_GUILD_ID)
+    print(f"Synced {len(synced)} command(s).")
 
 
 # --------------------------------------------------
@@ -67,6 +78,51 @@ async def on_message(message):
             message.channel,
             message.author
         )
+        await client.process_commands(message)
+        
+# --------------Points Command---------------------
+
+@client.tree.command(
+    name="points", 
+    description="View your points", 
+    guild = DISCORD_GUILD_ID
+)
+  
+async def points(interaction: discord.Interaction):
+    await interaction.response.defer() 
+    user_points = get_points(interaction.user.id)
+    
+    if user_points is None:
+        await interaction.edit_original_response(
+            content="You are not registered yet."
+        )
+        return
+    await interaction.edit_original_response(
+        content=f"You have {user_points} points."
+    )
+
+# --------------Leaderboard Command---------------------
+
+@client.tree.command(
+    name="leaderboard", 
+    description="View the points leaderboard", 
+    guild = DISCORD_GUILD_ID
+)
+async def leaderboard(interaction: discord.Interaction):
+    members = get_leaderboard()
+    
+    if not members:
+        await interaction.response.send_message(
+            "No registered members yet."
+        )
+        return
+    lines = [
+        f"**{place}. {name}** {points} points"
+        for place, (name, points) in enumerate(members, start=1)
+    ]
+    await interaction.response.send_message(
+        "Points Leaderboard:\n" + "\n".join(lines)
+    )
 
 
 # --------------------------------------------------
