@@ -29,3 +29,9 @@ Thumbs.db
 
 # Local logs
 *.log
+
+# Local SQLite databases
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
