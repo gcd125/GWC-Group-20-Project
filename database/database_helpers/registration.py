@@ -8,7 +8,7 @@ import sqlite3
 def member_already_registered(discord_id):
 
     connection = sqlite3.connect(
-        "gwcbot.db",
+        "database/gwcbot.db",
         timeout=10
     )
 
@@ -48,7 +48,7 @@ def save_member_to_database(registration_data):
 
     try:
         connection = sqlite3.connect(
-            "gwcbot.db",
+            "database/gwcbot.db",
             timeout=10 #wait 10seconds before crash
         )
 

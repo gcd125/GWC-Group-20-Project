@@ -8,7 +8,7 @@ from openpyxl.utils import get_column_letter
 # DATABASE
 # --------------------------------------------------
 
-connection = sqlite3.connect("gwcbot.db")
+connection = sqlite3.connect("database/gwcbot.db")
 cursor = connection.cursor()
 
 

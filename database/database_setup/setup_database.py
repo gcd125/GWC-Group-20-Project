@@ -1,7 +1,7 @@
 import sqlite3
 
 def init_db():
-    connection = sqlite3.connect("gwcbot.db")
+    connection = sqlite3.connect("database/gwcbot.db")
 
 
     with open("database/gwcbot.sql", "r") as file:

@@ -2,9 +2,9 @@ import sqlite3
 import os
 
 
-print(os.path.abspath("gwcbot.db"))
+print(os.path.abspath("database/gwcbot.db"))
 
-connection = sqlite3.connect("gwcbot.db")
+connection = sqlite3.connect("database/gwcbot.db")
 cursor = connection.cursor()
 
 cursor.execute("""

@@ -4,7 +4,7 @@ import sqlite3
 #----------------------------------------------
 # DATABASE HELPERS
 # --------------------------------------------------
-connection = sqlite3.connect("gwcbot.db")
+connection = sqlite3.connect("database/gwcbot.db")
 
 
 class NewEvent:
@@ -73,7 +73,7 @@ def get_events():
     return events
 
 def get_event(event_id):
-    connection = sqlite3.connect("gwcbot.db")
+    connection = sqlite3.connect("database/gwcbot.db")
 
     cursor = connection.cursor()
 
@@ -89,7 +89,7 @@ def get_event(event_id):
     return event
 
 def get_active_event(passcode: str, now: int):
-    connection = sqlite3.connect("gwcbot.db")
+    connection = sqlite3.connect("database/gwcbot.db")
     
     cursor = connection.cursor()
     
