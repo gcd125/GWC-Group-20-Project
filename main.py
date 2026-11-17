@@ -89,16 +89,16 @@ async def on_message(message):
 )
   
 async def points(interaction: discord.Interaction):
-    await interaction.response.defer() 
+    await interaction.response.defer(ephemeral=True) 
     user_points = get_points(interaction.user.id)
     
     if user_points is None:
         await interaction.edit_original_response(
-            content="You are not registered yet."
+            content="You are not registered yet.",
         )
         return
     await interaction.edit_original_response(
-        content=f"You have {user_points} points."
+        content=f"You have {user_points} points.",
     )
 
 # --------------Leaderboard Command---------------------
@@ -113,7 +113,8 @@ async def leaderboard(interaction: discord.Interaction):
     
     if not members:
         await interaction.response.send_message(
-            "No registered members yet."
+            "No registered members yet.",
+            ephemeral=True
         )
         return
     lines = [
@@ -121,7 +122,8 @@ async def leaderboard(interaction: discord.Interaction):
         for place, (name, points) in enumerate(members, start=1)
     ]
     await interaction.response.send_message(
-        "Points Leaderboard:\n" + "\n".join(lines)
+        "Points Leaderboard:\n" + "\n".join(lines),
+        ephemeral=True
     )
 
 

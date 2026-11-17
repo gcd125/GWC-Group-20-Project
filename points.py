@@ -17,14 +17,17 @@ def get_points(discord_id: int) -> int | None:
         return None
     
 def get_leaderboard(limit: int = 10):
-    with sqlite3.connect('gwcbot.db') as connection:
-        result = connection.execute(
-            """
-            SELECT full_name, points_balance
-            FROM Members
-            ORDER BY points_balance DESC
-            LIMIT ?
-            """,
-            (limit,)
-        ).fetchall()
-    return result
+    try:
+        with sqlite3.connect('leaderboard_test.db') as connection:
+            return connection.execute(
+                """
+                SELECT full_name, points_balance
+                FROM Members
+                ORDER BY points_balance DESC
+                LIMIT ?
+                """,
+                (limit,)
+            ).fetchall()
+    except sqlite3.Error as error:
+        print(f"Database error: {error}")
+        return []
