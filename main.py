@@ -1,11 +1,17 @@
 import discord
+from discord import app_commands
 
 #enviornment setup
 import os
 from dotenv import load_dotenv
 
 #calling other files
-from bot_events import register_events
+from bot.bot_commands import register_commands
+from bot.bot_events import register_events
+
+from database.database_setup.setup_database import init_db
+
+init_db()
 
 load_dotenv()
 # --------------------------------------------------
@@ -23,6 +29,10 @@ functionalities.message_content = True
 
 client = discord.Client(intents=functionalities)
 
-register_events(client)
+tree = register_commands(client)
+register_events(client, tree)
+
+
+
 
 client.run(os.environ["DISCORD_TOKEN"]) # hide the bot token

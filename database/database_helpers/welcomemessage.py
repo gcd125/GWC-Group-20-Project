@@ -1,6 +1,6 @@
 import discord
 
-from specific_tasks.registration import RegistrationView
+from database.database_helpers.registration import RegistrationView
 
 
 async def send_welcome_message(channel, member):

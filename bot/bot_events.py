@@ -1,12 +1,17 @@
 import discord
 
-from specific_tasks.welcomemessage import send_welcome_message
-from specific_tasks.events import send_event_message
+from database.database_helpers.welcomemessage import send_welcome_message
+from database.database_helpers.events import send_event_message
 
 
-def register_events(client):
+def register_events(client, tree):
+    GUILD_ID = discord.Object(id=1554889207321993306)
+
+
     @client.event
     async def on_ready():
+        tree.copy_global_to(guild=GUILD_ID)
+        await tree.sync(guild=GUILD_ID)
         print(f"Logged in as {client.user}")
 
     # @client.event

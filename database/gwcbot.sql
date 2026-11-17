@@ -33,9 +33,15 @@ CREATE TABLE Events (
     event_id INTEGER PRIMARY KEY,
     event_name TEXT NOT NULL,
     event_type_id INTEGER NOT NULL, 
-    event_organizer INTEGER,
+    event_organizer_id INTEGER,
     event_points INTEGER NOT NULL DEFAULT 0,
-    FOREIGN KEY (event_organizer) REFERENCES Members(member_id), -- event organizer can only be creating by assigning at least a member
+    event_date DATE
+    event_start_time TIME,
+    event_end_time TIME,
+    event_passcode TEXT NOT NULL, 
+    event_attendance_opens_at INTEGER,
+    event_attendance_closes_at INTEGER,
+    FOREIGN KEY (event_organizer_id) REFERENCES Members(member_id), -- event organizer can only be creating by assigning at least a member
     FOREIGN KEY (event_type_id) REFERENCES Event_Types(type_id) -- corelate to previous event type table
 );
 
