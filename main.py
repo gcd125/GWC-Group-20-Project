@@ -114,7 +114,6 @@ async def leaderboard(interaction: discord.Interaction):
     if not members:
         await interaction.response.send_message(
             "No registered members yet.",
-            ephemeral=True
         )
         return
     lines = [
@@ -122,8 +121,7 @@ async def leaderboard(interaction: discord.Interaction):
         for place, (name, points) in enumerate(members, start=1)
     ]
     await interaction.response.send_message(
-        "Points Leaderboard:\n" + "\n".join(lines),
-        ephemeral=True
+        "Points Leaderboard:\n" + "\n".join(lines)
     )
 
 
