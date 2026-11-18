@@ -29,3 +29,13 @@ Thumbs.db
 
 # Local logs
 *.log
+
+# Private runtime data and backups
+*.db
+*.db-*
+*.sqlite*
+*.backup
+*.bak
+*.pem
+*.key
+analytics*.json
