@@ -6,9 +6,9 @@ from types import SimpleNamespace as NS
 from unittest.mock import AsyncMock, patch
 from zoneinfo import ZoneInfo
 from gwcbot import GWCBot
-from giveaways import GiveawayStore, EnterGiveawayView
-from member_links import initialize_links
-from welcome import register_member, RegistrationView, RegistrationPromptView, WelcomeFeature
+from features.giveaways import GiveawayStore, EnterGiveawayView
+from features.member_links import initialize_links
+from features.welcome import register_member, RegistrationView, RegistrationPromptView, WelcomeFeature
 
 class WelcomeTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
@@ -31,7 +31,7 @@ class WelcomeTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.db.execute('SELECT member_id FROM Member_Discord_Links').fetchone()[0],member)
 
     def test_random_ids_skip_existing_and_preserve_user_id(self):
-        with patch('welcome.secrets.choice', side_effect=lambda available: available[0]):
+        with patch('features.welcome.secrets.choice', side_effect=lambda available: available[0]):
             first, _ = register_member(self.db,10,20,'A','B','CS')
             second, _ = register_member(self.db,10,21,'C','D','CS')
             repeated, created = register_member(self.db,10,20,'A','B','CS')
@@ -126,7 +126,7 @@ class WelcomeTests(unittest.IsolatedAsyncioTestCase):
         user=NS(id=20,bot=False,send=AsyncMock(side_effect=denied))
         channel=NS(send=AsyncMock())
         message=NS(id=900,author=user,guild=NS(id=10),channel=channel)
-        with self.assertLogs('welcome',level='WARNING'):
+        with self.assertLogs('features.welcome',level='WARNING'):
             await bot.welcome.handle_message(message)
         self.assertIn('Enable direct messages',channel.send.await_args.args[0])
         self.assertNotIn('embed',channel.send.await_args.kwargs)
@@ -165,7 +165,7 @@ class WelcomeTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(channel.send.await_count,2)
             member.bot=False
             guild.text_channels=[]
-            with self.assertLogs('welcome',level='ERROR'):
+            with self.assertLogs('features.welcome',level='ERROR'):
                 await bot.on_member_join(member)
         member.joined_at += dt.timedelta(days=1)
         with patch.dict('os.environ',{'WELCOME_CHANNEL_ID':'30'}):

@@ -12,8 +12,7 @@ class SlashTests(unittest.IsolatedAsyncioTestCase):
         i=NS(id=1,guild=NS(id=2),user=NS(id=3,bot=False),response=NS(defer=AsyncMock()),followup=NS(send=AsyncMock()))
         command=bot.tree.get_command('registration')
         self.assertTrue(command.guild_only)
-        self.assertIs(command.binding, bot)
-        await command.callback(bot, i)
+        await command.callback(i)
         self.assertTrue(i.response.defer.await_args.kwargs['ephemeral'])
         self.assertTrue(i.followup.send.await_args.kwargs['ephemeral'])
         bot.welcome.handle_message=AsyncMock()
@@ -24,13 +23,30 @@ class SlashTests(unittest.IsolatedAsyncioTestCase):
     async def test_giveaway_rejects_dm_and_privately_opens_host_controls(self):
         bot=GWCBot(None,None,ZoneInfo('America/New_York'),dt.time(9),test_mode=True)
         i=NS(guild=None,user=NS(bot=False),response=NS(send_message=AsyncMock()))
-        await bot.tree.get_command('giveaway').callback(bot, i)
+        await bot.tree.get_command('giveaway').callback(i)
         self.assertIn('permission',i.response.send_message.await_args.args[0])
         i.guild=NS(id=2)
         bot.giveaways.can_host=lambda user: True
-        await bot.tree.get_command('giveaway').callback(bot, i)
+        await bot.tree.get_command('giveaway').callback(i)
         sent=i.response.send_message.await_args.kwargs
         self.assertTrue(sent['ephemeral'])
         self.assertIn('Giveaways',sent['embed'].title)
         sent['view'].stop()
+        await bot.close()
+
+
+class SyncTests(unittest.IsolatedAsyncioTestCase):
+    async def test_sync_uses_only_selected_scope(self):
+        from bot_commands import sync_commands
+        from unittest.mock import patch
+        bot=GWCBot(None,None,ZoneInfo('America/New_York'),dt.time(9),test_mode=True)
+        bot.http.upsert_guild_command=AsyncMock()
+        bot.http.upsert_global_command=AsyncMock()
+        with patch.dict('os.environ', {'GUILD_ID': '123'}):
+            await sync_commands(bot,bot.tree)
+        self.assertEqual(bot.http.upsert_guild_command.await_count,2)
+        bot.http.upsert_global_command.assert_not_awaited()
+        with patch.dict('os.environ', {'GUILD_ID': ''}):
+            await sync_commands(bot,bot.tree)
+        self.assertEqual(bot.http.upsert_global_command.await_count,2)
         await bot.close()

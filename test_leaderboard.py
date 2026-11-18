@@ -5,7 +5,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock
 from zoneinfo import ZoneInfo
 from gwcbot import GWCBot
-from leaderboard import leaderboard_page, leaderboard_embed
+from features.leaderboard import leaderboard_page, leaderboard_embed
 
 class LeaderboardTest(unittest.IsolatedAsyncioTestCase):
     def setUp(self):

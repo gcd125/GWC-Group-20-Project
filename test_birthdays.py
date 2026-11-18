@@ -3,7 +3,7 @@ import sqlite3
 import unittest
 from unittest.mock import AsyncMock
 from types import SimpleNamespace
-from birthdays import birthday_matches, send_birthdays, birthday_embed
+from features.birthdays import birthday_matches, send_birthdays, birthday_embed
 
 
 class BirthdaysTest(unittest.IsolatedAsyncioTestCase):
@@ -39,7 +39,7 @@ class BirthdaysTest(unittest.IsolatedAsyncioTestCase):
         await send_birthdays(db, channel, dt.date(2027, 11, 1))
         self.assertEqual(channel.send.await_count, 2)
         channel.send.side_effect = TimeoutError('uncertain delivery')
-        with self.assertLogs('birthdays', level='ERROR'):
+        with self.assertLogs('features.birthdays', level='ERROR'):
             await send_birthdays(db, channel, dt.date(2028, 11, 1))
         await send_birthdays(db, channel, dt.date(2028, 11, 1))
         self.assertEqual(channel.send.await_count, 3)

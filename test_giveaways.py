@@ -5,8 +5,8 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace as NS
 from unittest.mock import AsyncMock
-from giveaways import GiveawayStore, GiveawayFeature, EnterGiveawayView, NewGiveawayView, parse_duration
-from member_links import initialize_links, link_member
+from features.giveaways import GiveawayStore, GiveawayFeature, EnterGiveawayView, NewGiveawayView, parse_duration
+from features.member_links import initialize_links, link_member
 
 async def empty_history(**kwargs):
     for message in []:
@@ -126,7 +126,7 @@ class GiveawayTest(unittest.IsolatedAsyncioTestCase):
         channel=NS(fetch_message=AsyncMock(return_value=message), history=empty_history, send=AsyncMock(return_value=NS(id=888)))
         bot=NS(db=self.db,user=None,get_channel=lambda _:channel)
         feature=GiveawayFeature(bot)
-        with self.assertLogs('giveaways',level='ERROR'): await feature.settle_due()
+        with self.assertLogs('features.giveaways',level='ERROR'): await feature.settle_due()
         self.assertEqual(self.store.get(gid)['published'],0)
         self.assertEqual(self.store.get(gid)['winner_id'],'100')
         await feature.settle_due()
@@ -152,7 +152,7 @@ class GiveawayTest(unittest.IsolatedAsyncioTestCase):
         channel=NS(fetch_message=AsyncMock(return_value=message),history=history,send=AsyncMock(side_effect=send))
         bot=NS(db=self.db,user=NS(id=42,display_avatar=NS(url='https://example.com/avatar.png')),get_channel=lambda _:channel)
         feature=GiveawayFeature(bot)
-        with self.assertLogs('giveaways',level='ERROR'):
+        with self.assertLogs('features.giveaways',level='ERROR'):
             await feature.settle_due()
         winner=self.store.get(gid)['winner_id']
         await GiveawayFeature(bot).settle_due()

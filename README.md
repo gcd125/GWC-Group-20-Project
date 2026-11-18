@@ -66,9 +66,11 @@ Improve accessibility to information within our Girls Who Code server.
 
 ## Files
 
-- `bot.py`: entry point; `gwcbot.py`: client and commands.
-- `welcome.py`, `birthdays.py`, `giveaways.py`, `leaderboard.py`: features.
-- `database.py`, `member_links.py`, `gwcdbbot.sql`: database access and schema.
+- `bot.py`: entry point; `gwcbot.py`: client setup and feature lifecycle.
+- `bot_commands.py`: register_commands(client) and slash-command synchronization.
+- `bot_events.py`: register_events(client, tree) for ready, join, and message events.
+- `features/`: registration, giveaways, birthdays, leaderboard, and member linking.
+- `database.py`, `gwcdbbot.sql`: database access and schema.
 - `test_*.py`: tests.
 - `dashboard/`: Insights website and export tools.
 
@@ -102,3 +104,25 @@ when the bot is offline, but updates require the sync process to be running.
 
 Website scripts are in `dashboard/package.json`. Use the Sites build/publish
 workflow for deployment and `npm run db:generate` after schema changes.
+
+## Team integration
+
+`GWCBot` creates the feature objects, calls `register_commands(self)` once, then
+`register_events(self, self.tree)`. Its setup hook initializes the feature tables,
+starts background tasks, and synchronizes commands. Its close method stops tasks.
+
+Add teammates' command decorators to the existing tree in `bot_commands.py`;
+do not create a second CommandTree or replace setup_hook. Add shared event
+behavior inside `bot_events.py`; registering another on_member_join replaces
+the existing handler. Registration must continue to use the DM welcome feature.
+
+Set GUILD_ID to register commands for the development server; without it, commands
+are global. This branch upserts commands individually so other registered commands
+are preserved. After the complete team command set is integrated, the team can
+choose bulk tree synchronization in one place.
+
+The pasted check-in, event-create and points commands depend on the team's
+`database.database_helpers` modules, which are not in this branch or shared main.
+They have not been added as broken imports or replaced with placeholders. The
+current database.py is this branch's SQLite connector; when merging the team's
+database package, move that connector into the package and update its import.

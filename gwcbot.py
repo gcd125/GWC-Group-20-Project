@@ -15,13 +15,14 @@ import certifi
 os.environ.setdefault('SSL_CERT_FILE', certifi.where())
 
 import discord
-from discord import app_commands
-from birthdays import BirthdayFeature, birthday_members, greeting
+from bot_commands import register_commands, sync_commands
+from bot_events import register_events
+from features.birthdays import BirthdayFeature, birthday_members, greeting
 from database import connect_database
-from leaderboard import LeaderboardFeature
-from giveaways import GiveawayFeature
-from welcome import WelcomeFeature
-from member_links import initialize_links, handle_link_command
+from features.leaderboard import LeaderboardFeature
+from features.giveaways import GiveawayFeature
+from features.welcome import WelcomeFeature
+from features.member_links import initialize_links
 
 LOG = logging.getLogger(__name__)
 
@@ -38,52 +39,15 @@ class GWCBot(discord.Client):
         self.leaderboard = LeaderboardFeature(self)
         self.giveaways = GiveawayFeature(self)
         self.welcome = WelcomeFeature(self)
-        self.tree = app_commands.CommandTree(self)
-        self.tree.add_command(app_commands.Command(name='registration', description='Receive your private member registration DM', callback=self.registration_command))
-        self.tree.add_command(app_commands.Command(name='giveaway', description='Create a club giveaway', callback=self.giveaway_command))
+        self.tree = register_commands(self)
+        register_events(self, self.tree)
 
     async def setup_hook(self):
         initialize_links(self.db)
         self.welcome.start()
         self.birthdays.start()
         self.giveaways.start()
-        # Upsert only our commands: bulk tree.sync() would remove teammates' commands.
-        for command in self.tree.get_commands():
-            await self.http.upsert_global_command(self.application_id, payload=command.to_dict(self.tree))
-
-    @app_commands.guild_only()
-    async def registration_command(self, interaction: discord.Interaction):
-        if interaction.guild is None or interaction.user.bot:
-            await interaction.response.send_message('Use this command in the club server.', ephemeral=True)
-            return
-        await interaction.response.defer(ephemeral=True)
-        sent = await self.welcome.send_registration_dm(f'slash:{interaction.id}', interaction.user, interaction.guild)
-        await interaction.followup.send('Your registration card is waiting in your DMs! 💙✨' if sent else
-            'Please enable DMs from server members and try /registration again. 💙', ephemeral=True)
-
-    @app_commands.guild_only()
-    async def giveaway_command(self, interaction: discord.Interaction):
-        await self.giveaways.handle_interaction(interaction)
-
-    async def on_ready(self):
-        LOG.info('Online as %s. Test mode: %s. Commands: /registration, !testbirthday YYYY-MM-DD, !leaderboard [page], /giveaway', self.user, self.test_mode)
-
-    async def on_member_join(self, member):
-        await self.welcome.handle_join(member)
-
-    async def on_message(self, message):
-        if message.author.bot or message.guild is None:
-            return
-        parts = message.content.split()
-        if not parts:
-            return
-        command = parts[0].lower()
-        if command == '!testbirthday':
-            await self.birthdays.handle_message(message)
-        elif command in ('!leaderboard', '!testleaderboard'):
-            await self.leaderboard.handle_message(message)
-        elif command == '!linkmember':
-            await handle_link_command(self, message)
+        await sync_commands(self, self.tree)
 
     async def close(self):
         self.welcome.stop()
