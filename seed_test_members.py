@@ -11,7 +11,7 @@ parser.add_argument('--date', type=dt.date.fromisoformat, default=dt.datetime.no
 args = parser.parse_args()
 today = args.date
 schema = Path(__file__).with_name('gwcdbbot.sql').read_text()
-# Only use the complete Members definition; the later Points table is unfinished.
+# Load the Members table used by the bot.
 member_schema = schema.split(';', 1)[0] + ';'
 rows = [
     (9001, 'member', 'Avery', 'Test', today.strftime('%m-%d'), 'Computer Science', None, 'active', 0),

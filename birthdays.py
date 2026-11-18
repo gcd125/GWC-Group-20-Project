@@ -25,7 +25,6 @@ def birthday_members(db, today):
 
 
 def greeting(member):
-    # The current registration schema has no Discord user ID; use first name.
     name = discord.utils.escape_mentions(discord.utils.escape_markdown(member['first_name']))[:100]
     return (f'🎉 Happy birthday, {name}! 💖 Your Girls Who Code family wishes you '
             'a day full of joy, cake, and a little coding magic! 🎂✨')
@@ -166,4 +165,3 @@ class BirthdayFeature:
     @check_birthdays.before_loop
     async def before_birthdays(self):
         await self.bot.wait_until_ready()
-

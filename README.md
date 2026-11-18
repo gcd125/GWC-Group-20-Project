@@ -64,3 +64,14 @@ owner-private hosted dashboard or move the live database online.
 ## Project Goals
 Develop a functional Discord bot using Python.
 Improve accessibility to information within our Girls Who Code server.
+
+## Files
+
+- `bot.py`: entry point; `gwcbot.py`: client and commands.
+- `welcome.py`, `birthdays.py`, `giveaways.py`, `leaderboard.py`: features.
+- `database.py`, `member_links.py`, `gwcdbbot.sql`: database access and schema.
+- `test_*.py`: tests.
+- `dashboard/`: Insights website and export tools.
+- `archive/early-registration/`: old prototype, kept for reference.
+
+See [feature notes](docs/features.md) for registration, birthdays and giveaways.

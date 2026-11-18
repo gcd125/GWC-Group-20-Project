@@ -125,10 +125,7 @@ def main():
     send_time = dt.time.fromisoformat(os.environ.get('BIRTHDAY_TIME', '09:00'))
     if send_time.tzinfo is not None:
         parser.error('BIRTHDAY_TIME must be a local time such as 09:00')
-    if args.test_mode:
-        db = connect_database(path)
-    else:
-        db = connect_database(path)
+    db = connect_database(path)
     try:
         GWCBot(db, None if args.test_mode else int(channel), timezone, send_time, test_mode=args.test_mode).run(token)
     finally:

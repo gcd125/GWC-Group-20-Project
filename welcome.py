@@ -134,7 +134,7 @@ class RegistrationModal(discord.ui.Modal, title='Member Registration'):
         except ValueError as error:
             text = str(error)
         except Exception:
-            # Never log submitted registration fields.
+            # Keep personal details out of logs.
             LOG.error('Could not save member registration')
             text = 'Registration could not be saved. Please try again or ask a club organizer for help.'
         await interaction.followup.send(text, ephemeral=True, allowed_mentions=discord.AllowedMentions.none())
@@ -228,7 +228,7 @@ class WelcomeFeature:
         if channel is None:
             LOG.error('No unique welcome channel in guild %s. Set WELCOME_CHANNEL_ID; members can use /registration.', member.guild.id)
             return
-        # joined_at distinguishes a genuine rejoin from a replay of the same event.
+        # A rejoin gets a new event ID.
         joined_at = member.joined_at.isoformat() if member.joined_at else 'unknown'
         event_id = f'join:{member.guild.id}:{member.id}:{joined_at}'
         try:
@@ -267,8 +267,7 @@ class WelcomeFeature:
         return True
 
     async def send_welcome(self, event_id, channel, user_id):
-        # Claim the Discord message before awaiting its reply. Separate bot
-        # processes sharing this database also observe this unique claim.
+        # Claim before sending to prevent duplicate replies.
         with self.bot.db:
             claimed = self.bot.db.execute(
                 'INSERT OR IGNORE INTO Welcome_Commands(message_id,recipient_id) VALUES(?,?)',
