@@ -24,7 +24,7 @@ def register_commands(client: discord.Client) -> app_commands.CommandTree:
             return
 
         event_id, event_name = event
-        is_new = record_attendance(event_id, interaction.user.id, now)
+        is_new = record_attendance(event_id, interaction.user.id)
 
         if is_new:
             await interaction.response.send_message(

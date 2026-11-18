@@ -100,8 +100,8 @@ def get_active_event(passcode: str, now: int):
     cursor = connection.cursor()
     
     return cursor.execute(
-        """SELECT id, name FROM events
-           WHERE passcode = ? AND opens_at <= ? AND closes_at >= ?""",
+        """SELECT event_id, event_name FROM Events
+           WHERE event_passcode = ? AND event_attendance_opens_at <= ? AND event_attendance_closes_at >= ?""",
         (passcode, now, now),
     ).fetchone()
     
