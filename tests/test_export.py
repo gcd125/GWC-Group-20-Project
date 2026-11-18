@@ -2,7 +2,7 @@ import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
-from export_analytics import snapshot
+from dashboard.tools.export_analytics import snapshot
 
 class ExportTests(unittest.TestCase):
     def test_missing_tables_and_no_private_fields(self):

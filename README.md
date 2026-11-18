@@ -54,7 +54,7 @@ BIRTHDAY_TIME (09:00), GIVEAWAY_HOST_ROLE_ID. Environment variables must be expo
 .env files are not automatically loaded. Test mode disables daily birthday scheduling,
 but immediate registration birthdays still send.
 
-Run `python -m unittest discover -v` for bot tests.
+Run `python -m unittest discover -s tests -v` from the project root for all bot and analytics tests.
 
 The `dashboard/` directory contains the GWC Insights website source and its
 read-only export/sync tools. Copying the source to GitHub does not grant access to the existing
@@ -71,7 +71,7 @@ Improve accessibility to information within our Girls Who Code server.
 - `bot_events.py`: register_events(client, tree) for ready, join, and message events.
 - `features/`: registration, giveaways, birthdays, leaderboard, and member linking.
 - `database/`, `gwcdbbot.sql`: database access and schema.
-- `test_*.py`: tests.
+- `tests/`: bot and analytics tests.
 - `dashboard/`: Insights website and export tools.
 
 ## Feature details
