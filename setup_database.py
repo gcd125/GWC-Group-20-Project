@@ -1,8 +1,8 @@
 import sqlite3
 
-connection = sqlite3.connect("gwcbot.db")
+connection = sqlite3.connect("gwcdbbot.db")
 
-with open("gwcbot.sql", "r") as file:
+with open("gwcdbbot.sql", "r") as file:
     sql_script = file.read()
 
 connection.executescript(sql_script)
