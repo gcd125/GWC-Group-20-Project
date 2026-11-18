@@ -80,5 +80,5 @@ def register_commands(client: discord.Client) -> app_commands.CommandTree:
         await tree.sync()
 
     client.setup_hook = setup_hook
-    
+
     return tree

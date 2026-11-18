@@ -9,9 +9,6 @@ from dotenv import load_dotenv
 from bot.bot_commands import register_commands
 from bot.bot_events import register_events
 
-from database.database_setup.setup_database import init_db
-
-init_db()
 
 load_dotenv()
 # --------------------------------------------------

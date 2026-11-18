@@ -1,14 +1,14 @@
 import sqlite3
 
-def init_db():
-    connection = sqlite3.connect("database/gwcbot.db")
+
+connection = sqlite3.connect("database/gwcbot.db")
 
 
-    with open("database/gwcbot.sql", "r") as file:
-        sql_script = file.read()
+with open("database/gwcbot.sql", "r") as file:
+    sql_script = file.read()
 
-    connection.executescript(sql_script)
+connection.executescript(sql_script)
 
-    connection.close()
+connection.close()
 
-    print("Database created successfully.")
+print("Database created successfully.")

@@ -35,9 +35,9 @@ CREATE TABLE Events (
     event_type_id INTEGER NOT NULL, 
     event_organizer_id INTEGER,
     event_points INTEGER NOT NULL DEFAULT 0,
-    event_date DATE
-    event_start_time TIME,
-    event_end_time TIME,
+    event_date INTEGER,
+    event_start_time INTEGER,
+    event_end_time INTEGER,
     event_passcode TEXT NOT NULL, 
     event_attendance_opens_at INTEGER,
     event_attendance_closes_at INTEGER,

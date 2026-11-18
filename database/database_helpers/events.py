@@ -35,28 +35,34 @@ def create_event(event: NewEvent) -> bool:
     connection.execute("PRAGMA busy_timeout = 10000")
     cursor = connection.cursor()
     cursor.execute(
-            """INSERT INTO Events
-               (event_name, 
-               event_type_id, 
-               event_organizer_id,
+            """
+            INSERT INTO Events(
+                event_name,
+                event_type_id, 
+                event_organizer_id,
                 event_points,
-                event_start_time, 
-                event_end_time, 
+                event_date,
+                event_start_time,
+                event_end_time,
                 event_passcode, 
-                event_attendance_opens_at, 
+                event_attendance_opens_at,
                 event_attendance_closes_at
-                )
-               VALUES (?, ?, ?, ?, ?, ?, ?)""",
-            (event.name,
-             event.type_id, 
-             event.organizer_id,
-             event.points, 
-             event.start_time, 
-             event.end_time,
-             event.passcode.strip().lower(), 
-             event.opens_at, 
-             event.closes_at),
-        )
+            ) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                event.name,
+                event.type_id, 
+                event.organizer_id,
+                event.points, 
+                event.date,
+                event.start_time, 
+                event.end_time,
+                event.passcode.strip().lower(), 
+                event.opens_at, 
+                event.closes_at,
+            ),
+    )
     connection.commit()
     
     return True
