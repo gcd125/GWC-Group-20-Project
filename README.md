@@ -2,7 +2,7 @@
 Girls Who Code Fall 2026 Project
 
 # Project Name
-GWC Discord Bot (Working Title)
+GWC Discord Bot
 
 ## About
 Our project is a Discord bot developed using Python to improve the functionality and user experience of our Girls Who Code Discord server.
@@ -10,9 +10,9 @@ Our project is a Discord bot developed using Python to improve the functionality
 The goal is to create a beginner-friendly, practical tool that helps members navigate the server, access important information, and stay connected with club activities.
 
 ## Team
-- Gabriella Delgadillo - Project Mentor
+- Gabriella D. - Project Mentor
 - Melanie — Team Member
-- Gabriela — Team Member
+- Gabriela P. — Team Member
 - Ananya — Team Member
 
 ## Technologies
@@ -67,9 +67,10 @@ appear in Discord. Do not run an older bot process with the same token.
 For production, create an empty database using gwcdbbot.sql, export
 GWC_DATABASE_PATH, DISCORD_TOKEN, and GENERAL_CHANNEL_ID, then run python bot.py.
 Optional variables: WELCOME_CHANNEL_ID, BIRTHDAY_TIMEZONE (America/New_York),
-BIRTHDAY_TIME (09:00), GIVEAWAY_HOST_ROLE_ID. Environment variables must be exported;
-.env files are not automatically loaded. Test mode disables daily birthday scheduling,
-but immediate registration birthdays still send.
+BIRTHDAY_TIME (09:00), GIVEAWAY_HOST_ROLE_ID. Environment variables can be configured 
+using a .env file or exported directly. Never commit bot tokens or private database 
+files to GitHub. Test mode disables daily birthday scheduling, but immediate registration 
+birthdays still send.
 
 Run `python -m unittest discover -s tests -v` from the project root for all bot and analytics tests.
 
