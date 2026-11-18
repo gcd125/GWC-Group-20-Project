@@ -57,8 +57,7 @@ but immediate registration birthdays still send.
 Run `python -m unittest discover -v` for bot tests.
 
 The `dashboard/` directory contains the GWC Insights website source and its
-read-only export/sync tools. See dashboard/README.md for its separate build and
-hosting setup. Copying the source to GitHub does not grant access to the existing
+read-only export/sync tools. Copying the source to GitHub does not grant access to the existing
 owner-private hosted dashboard or move the live database online.
 
 ## Project Goals
@@ -72,6 +71,34 @@ Improve accessibility to information within our Girls Who Code server.
 - `database.py`, `member_links.py`, `gwcdbbot.sql`: database access and schema.
 - `test_*.py`: tests.
 - `dashboard/`: Insights website and export tools.
-- `archive/early-registration/`: old prototype, kept for reference.
 
-See [feature notes](docs/features.md) for registration, birthdays and giveaways.
+## Feature details
+
+Registration collects name, major, optional birthday and phone. Existing registrations
+are not overwritten. Members with blocked DMs can enable them and retry `/registration`.
+The form does not assign Discord roles.
+
+Automatic birthday greetings are limited to active members and one per year.
+February 29 birthdays are celebrated in leap years. `!testbirthday [YYYY-MM-DD]`
+requires Manage Server and test mode; it does not change delivery history.
+
+Giveaway durations range from 10 seconds to 30 days (for example, 30s or 2h).
+Each active registered member can enter once. A winner is selected randomly;
+points do not affect the odds. Creator, prize, entries, deadline, draw time and
+winner are saved. Overdue draws finish after restart. Give the bot Read Message
+History permission so it can update results and recover announcements.
+
+## Dashboard
+
+GWC Insights uses React/Vinext and Sites hosting with a D1 snapshot store. SQLite
+remains the source of truth. The dashboard shows member counts, majors, points,
+giveaway history, and event attendance when those records are available.
+
+Keep the hosted dashboard private: its data routes rely on the platform access
+controls. Exports exclude birthdays and phone numbers. See
+[the sync guide](dashboard/public/sync-guide.txt) for export and upload commands.
+The exporter reads SQLite without changing it. The dashboard stays accessible
+when the bot is offline, but updates require the sync process to be running.
+
+Website scripts are in `dashboard/package.json`. Use the Sites build/publish
+workflow for deployment and `npm run db:generate` after schema changes.
