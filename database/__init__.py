@@ -10,5 +10,7 @@ def connect_database(path):
     required = {'member_id', 'first_name', 'member_dob', 'member_status', 'last_name', 'points_balance', 'major', 'phone_number', 'member_role'}
     if not required <= columns:
         db.close()
+        if {'full_name', 'discord_id'} <= columns:
+            raise ValueError('This is the original member schema. The current bot requires a schema adapter; do not replace or recreate this database. Use a separate test database created from the root gwcdbbot.sql.')
         raise ValueError('Registration database needs Members with: ' + ', '.join(sorted(required)))
     return db

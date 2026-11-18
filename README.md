@@ -186,3 +186,20 @@ first_name/last_name and a separate Discord-link table; the original schema uses
 full_name and discord_id in Members. Neither schema replaces the other. A deliberate
 adapter or migration is still needed before running current features against the
 original schema. This recovery does not migrate or modify database records.
+
+## Verification and remaining integration
+
+The automated suite covers the single client/tree, command registration, private
+DM registration, random member IDs, giveaways, birthdays, leaderboards, and analytics.
+Run `python -m unittest discover -s tests -v` from the repository root.
+
+The analytics exporter accepts both member-name formats. The bot still requires
+the newer member schema and refuses the original schema with an explanation;
+restoring the original helpers does not automatically integrate them. Original
+SQL and helper sources remain unchanged. No live database migration has been run.
+
+Before a full-team demo, integrate the original schema through an adapter and
+connect the team's event/check-in/points modules. Test joins, DMs, slash commands,
+permissions and timed giveaways in Discord with one running client. Automated
+Discord mocks cannot verify live server settings. The website deployment is separate
+from a GitHub push and has not been rebuilt or redeployed during this review.
