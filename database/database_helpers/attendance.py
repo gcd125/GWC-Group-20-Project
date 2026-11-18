@@ -16,14 +16,14 @@ def register_for_event(member_id, event_id):
     return registered
 
 
-def mark_present(member_id, event_id):
+def mark_present(member_id, event_id, points):
     connection = get_connection()
 
     cursor = connection.cursor()
     cursor.execute(
         """UPDATE Event_Participation SET member_attendance = 'present'
            WHERE member_id = ? AND event_id = ?""",
-        (member_id, event_id))
+        ( member_id, event_id))
     updated = cursor.rowcount > 0
 
     connection.commit()
@@ -32,7 +32,7 @@ def mark_present(member_id, event_id):
     return updated
 
 
-def record_attendance(event_id, discord_id):
+def record_attendance(event_id, discord_id, points):
     # Passcode check-in. Returns None if not a registered member,
     # True if newly marked present, False if already present.
     member = get_member(discord_id)
@@ -46,7 +46,8 @@ def record_attendance(event_id, discord_id):
         "INSERT OR IGNORE INTO Event_Participation (member_id, event_id) VALUES (?, ?)",
         (member[0], event_id))
     cursor.execute(
-        """UPDATE Event_Participation SET member_attendance = 'present'
+        """UPDATE Event_Participation 
+                SET member_attendance = 'present'
            WHERE member_id = ? AND event_id = ?
              AND (member_attendance IS NULL OR member_attendance != 'present')""",
         (member[0], event_id))

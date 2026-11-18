@@ -11,7 +11,7 @@ from database.database_helpers.events import (
     format_time, send_event_message)
 from database.database_helpers.attendance import (
     record_attendance, register_for_event, mark_present, get_attendance_counts)
-from database.database_helpers.points import get_leaderboard, get_points
+from database.database_helpers.points import get_leaderboard, get_points, add_points
 
 
 def is_officer(interaction):
@@ -37,8 +37,8 @@ def register_commands(client: discord.Client) -> app_commands.CommandTree:
                 "Invalid or expired passcode.", ephemeral=True)
             return
 
-        event_id, event_name = event
-        is_new = record_attendance(event_id, interaction.user.id)
+        event_id, event_name, event_points = event
+        is_new = record_attendance(event_id, interaction.user.id, event_points)
 
         if is_new is None:
             await interaction.response.send_message(
@@ -46,6 +46,7 @@ def register_commands(client: discord.Client) -> app_commands.CommandTree:
         elif is_new:
             await interaction.response.send_message(
                 f"✅ Checked in to **{event_name}**. Attendance recorded!", ephemeral=True)
+            add_points(event_points, interaction.user.id)
         else:
             await interaction.response.send_message(
                 f"You're already checked in to **{event_name}**.", ephemeral=True)
@@ -174,7 +175,8 @@ def register_commands(client: discord.Client) -> app_commands.CommandTree:
             await interaction.response.send_message(
                 "Only officers can check in members.", ephemeral=True)
             return
-        if get_event(event_id) is None:
+        event = get_event(event_id)
+        if event is None:
             await interaction.response.send_message("Event not found.", ephemeral=True)
             return
         member_row = get_member(member.id)
@@ -183,11 +185,13 @@ def register_commands(client: discord.Client) -> app_commands.CommandTree:
                 "Member not registered with GWC.", ephemeral=True)
             return
 
-        updated = mark_present(member_row[0], event_id)
+        updated = mark_present(member_row[0], event_id, event[5])
         await interaction.response.send_message(
             f"✅ {member.display_name} marked present." if updated
             else "Member has not registered for this event.",
             ephemeral=True)
+        if updated:
+            add_points(event[5], member.id)
 
     # ------------------------- Attendance ---------------------------------
     @tree.command(name="event-attendance", description="View event attendance")
@@ -306,3 +310,8 @@ def register_commands(client: discord.Client) -> app_commands.CommandTree:
     client.setup_hook = setup_hook
 
     return tree
+
+# Called from GWCBot.setup_hook in main.py
+async def sync_commands(client, tree):
+    client.send_reminders.start()   # start the 24-hour event reminders
+    await tree.sync()               # send the slash commands to Discord
