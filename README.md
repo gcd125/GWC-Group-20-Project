@@ -19,7 +19,47 @@ The goal is to create a beginner-friendly, practical tool that helps members nav
 - Python
 
 ## How to Run the Project
-Instructions will go here.
+Requires Python 3.13. Run one bot process per Discord application; teammates must
+stop older copies or duplicate public welcome cards can still appear.
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python seed_test_members.py
+python bot.py --test-mode
+```
+
+The test database contains fictional members. The startup prompts privately for
+DISCORD_TOKEN if it is not exported. Never commit tokens or real database files.
+Enable Server Members Intent and Message Content Intent in the Developer Portal.
+Install the application with bot and applications.commands scopes. Give it View
+Channel, Send Messages and Embed Links permissions.
+
+- `/registration`: DM-only registration card, with a private command acknowledgement.
+- `/giveaway`: private creation controls; the giveaway itself posts in the channel.
+- Joining: public greeting in #welcome without buttons plus a separate registration DM.
+- Registration links the member to giveaways, assigns a random unused 0001–9999 ID,
+  and sends a same-day birthday greeting in #general.
+- Existing `!leaderboard`, `!testbirthday`, and `!linkmember` remain available in this
+  source. Other slash commands maintained elsewhere are not overwritten by startup.
+
+Startup upserts only /registration and /giveaway. Global commands may take time to
+appear in Discord. Do not run an older bot process with the same token.
+
+For production, create an empty database using gwcdbbot.sql, export
+GWC_DATABASE_PATH, DISCORD_TOKEN, and GENERAL_CHANNEL_ID, then run python bot.py.
+Optional variables: WELCOME_CHANNEL_ID, BIRTHDAY_TIMEZONE (America/New_York),
+BIRTHDAY_TIME (09:00), GIVEAWAY_HOST_ROLE_ID. Environment variables must be exported;
+.env files are not automatically loaded. Test mode disables daily birthday scheduling,
+but immediate registration birthdays still send.
+
+Run `python -m unittest discover -v` for bot tests.
+
+The `dashboard/` directory contains the GWC Insights website source and its
+read-only export/sync tools. See dashboard/README.md for its separate build and
+hosting setup. Copying the source to GitHub does not grant access to the existing
+owner-private hosted dashboard or move the live database online.
 
 ## Project Goals
 Develop a functional Discord bot using Python.

@@ -1,0 +1,38 @@
+GWC Insights — refreshing your dashboard
+
+Your dashboard stores the latest analytics snapshot online. It remains readable
+when your Mac or bot is off. It does not yet replace or host the bot database.
+
+Option 1: Manual export (no cloud credential required)
+Run in Terminal:
+python3 "/Users/gabrielap/Desktop/Projects/gwc-insights/tools/export_analytics.py" "/Users/gabrielap/OneDrive/GWC Project/gwc_test.db" "/Users/gabrielap/Desktop/gwc-analytics.json"
+
+Open Data connection in your dashboard and choose Import analytics snapshot.
+Select gwc-analytics.json. It is saved privately online across devices.
+
+Option 2: Continuous sync
+The companion tools/sync_analytics.py can send a snapshot every 60 seconds while
+this Mac is on. It requires the Site's service token (not your Discord bot token).
+Keep the token in an environment variable or enter it at the hidden prompt; never
+put it in the source code or share it in chat.
+
+python3 tools/sync_analytics.py "/path/to/database.db" --url https://gwc-club-insights.brainyarch.chatgpt.site --watch
+
+The bot and sync process still need hosting for updates while your Mac is off.
+
+Metric definitions
+Registered members: all rows in Members.
+Active members: member_status exactly 'active'; not a Discord activity measure.
+Points: current points_balance, not lifetime points earned.
+Event registrations: unique members with Event_Participation rows for the event.
+Attendance: unique members marked 'present' for each event.
+Attendance rate: present / registered, not present / all club members.
+Missing tables show 'not connected'; they are never represented as zero activity.
+The source has no registration dates or event dates; historical growth/date
+filters are intentionally unavailable. Old giveaways may lack recorded dates.
+
+Privacy
+The snapshot includes member names, IDs, major, status, points, Discord-link
+presence, and giveaway/event details. Phone numbers and birthdays are excluded.
+Keep this Site owner-private: its shared sync endpoint relies on platform access.
+Do not make it public without adding per-route authorization for all data APIs.
