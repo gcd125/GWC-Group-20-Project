@@ -5,12 +5,13 @@ from discord import app_commands
 # adjust this import to match your database file's name and functions
 from database.database_helpers.events import NewEvent, create_event, get_active_event
 from database.database_helpers.attendance import record_attendance
-
+from database.database_helpers.points import get_leaderboard, get_points 
 
 def register_commands(client: discord.Client) -> app_commands.CommandTree:
     tree = app_commands.CommandTree(client)
     print("hello")
-
+    
+    # ---------------- Check In command ------------------
     @tree.command(name="check-in", description="Check in to an event with a passcode")
     @app_commands.describe(passcode="The passcode for the event")
     @app_commands.checks.cooldown(3, 60.0)  # 3 attempts per minute per user
@@ -33,6 +34,8 @@ def register_commands(client: discord.Client) -> app_commands.CommandTree:
             await interaction.response.send_message(
                 f"You're already checked in to **{event_name}**.", ephemeral=True)
 
+    # ------------------------- Create Event ---------------------------------
+    
     @tree.command(name="event-create", description="Create an event with a check-in passcode")
     @app_commands.describe(
         name="Name of the event",
@@ -66,6 +69,52 @@ def register_commands(client: discord.Client) -> app_commands.CommandTree:
             f"Event **{name}** created (ID {event_id}), open for {minutes_open} minutes.",
             ephemeral=True)
 
+
+    # --------------Points Command---------------------
+
+    @tree.command(
+        name="points", 
+        description="View your points", 
+    )
+    
+    async def points(interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True) 
+        user_points = get_points(interaction.user.id)
+        
+        if user_points is None:
+            await interaction.edit_original_response(
+                content="You are not registered yet.",
+            )
+            return
+        await interaction.edit_original_response(
+            content=f"You have {user_points} points.",
+        )
+
+    # --------------Leaderboard Command---------------------
+
+    @tree.command(
+        name="leaderboard", 
+        description="View the points leaderboard", 
+    )
+    async def leaderboard(interaction: discord.Interaction):
+        members = get_leaderboard()
+        
+        if not members:
+            await interaction.response.send_message(
+                "No registered members yet.",
+                ephemeral=True
+            )
+            return
+        lines = [
+            f"**{place}. {name}** {points} points"
+            for place, (name, points) in enumerate(members, start=1)
+        ]
+        await interaction.response.send_message(
+            "Points Leaderboard:\n" + "\n".join(lines),
+            ephemeral=True
+        )
+
+    # -------------------------- Error ---------------------
     @tree.error
     async def on_command_error(interaction: discord.Interaction,
                                error: app_commands.AppCommandError):

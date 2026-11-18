@@ -1,11 +1,16 @@
 import discord
 
+#enviornment setup
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from database.database_helpers.welcomemessage import send_welcome_message
 from database.database_helpers.events import send_event_message
 
 
 def register_events(client, tree):
-    GUILD_ID = discord.Object(id=1554889207321993306)
+    GUILD_ID = discord.Object(id=os.environ["GUILD_ID"])
 
 
     @client.event

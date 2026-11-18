@@ -4,13 +4,15 @@ from discord import app_commands
 #enviornment setup
 import os
 from dotenv import load_dotenv
+load_dotenv()
+
 
 #calling other files
-from bot.bot_commands import register_commands
-from bot.bot_events import register_events
+from features.bot_commands import register_commands
+from features.bot_events import register_events
 
 
-load_dotenv()
+
 # --------------------------------------------------
 # INTENTS / BOT SETUP
 # --------------------------------------------------
