@@ -10,6 +10,9 @@ def register_commands(client: discord.Client) -> app_commands.CommandTree:
         tree = app_commands.CommandTree(client)
         client.tree = tree
 
+    if getattr(client, '_gwc_commands_registered', False):
+        return tree
+
     @tree.command(name='registration', description='Receive your private member registration DM')
     @app_commands.guild_only()
     async def registration(interaction: discord.Interaction):
@@ -28,6 +31,7 @@ def register_commands(client: discord.Client) -> app_commands.CommandTree:
     async def giveaway(interaction: discord.Interaction):
         await client.giveaways.handle_interaction(interaction)
 
+    client._gwc_commands_registered = True
     return tree
 
 

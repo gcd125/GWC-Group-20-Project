@@ -45,9 +45,9 @@ class GWCBot(discord.Client):
     async def setup_hook(self):
         initialize_links(self.db)
         self.welcome.start()
+        await sync_commands(self, self.tree)
         self.birthdays.start()
         self.giveaways.start()
-        await sync_commands(self, self.tree)
 
     async def close(self):
         self.welcome.stop()

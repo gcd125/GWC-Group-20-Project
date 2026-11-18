@@ -50,3 +50,32 @@ class SyncTests(unittest.IsolatedAsyncioTestCase):
             await sync_commands(bot,bot.tree)
         self.assertEqual(bot.http.upsert_global_command.await_count,2)
         await bot.close()
+
+
+class ClientStructureTests(unittest.IsolatedAsyncioTestCase):
+    async def test_features_share_one_client_and_tree(self):
+        import discord
+        from bot_commands import register_commands
+        bot=GWCBot(None,None,ZoneInfo('America/New_York'),dt.time(9),test_mode=True)
+        self.assertIsInstance(bot,discord.Client)
+        tree=bot.tree
+        self.assertIs(register_commands(bot),tree)
+        self.assertEqual(len(tree.get_commands()),2)
+        for feature in (bot.welcome,bot.birthdays,bot.giveaways,bot.leaderboard):
+            self.assertIs(feature.bot,bot)
+        await bot.close()
+
+    async def test_failed_sync_does_not_start_background_tasks(self):
+        import sqlite3
+        from unittest.mock import patch, Mock
+        db=sqlite3.connect(':memory:')
+        bot=GWCBot(db,None,ZoneInfo('America/New_York'),dt.time(9),test_mode=True)
+        bot.birthdays.start=Mock()
+        bot.giveaways.start=Mock()
+        with patch('gwcbot.sync_commands',new=AsyncMock(side_effect=RuntimeError('sync failed'))):
+            with self.assertRaises(RuntimeError):
+                await bot.setup_hook()
+        bot.birthdays.start.assert_not_called()
+        bot.giveaways.start.assert_not_called()
+        await bot.close()
+        db.close()

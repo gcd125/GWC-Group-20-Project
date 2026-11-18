@@ -126,3 +126,25 @@ The pasted check-in, event-create and points commands depend on the team's
 They have not been added as broken imports or replaced with placeholders. The
 current database.py is this branch's SQLite connector; when merging the team's
 database package, move that connector into the package and update its import.
+
+## How the client fits together
+
+`bot.py` calls `main()` in `gwcbot.py`. Main opens the database and creates one
+`GWCBot`, a subclass of `discord.Client`, then calls `run(token)`.
+
+That client owns the database connection, command tree, and feature instances.
+`register_commands(client)` attaches slash commands to its tree;
+`register_events(client, tree)` attaches Discord event callbacks to the same client.
+Feature modules receive that client and do not create their own Discord connection.
+
+At login, setup_hook initializes links and persistent welcome buttons, synchronizes
+commands, then starts birthday and giveaway tasks. on_ready only logs readiness;
+it does not repeat setup after reconnects. close stops the tasks and views.
+
+A join calls on_member_join → welcome.handle_join → public greeting + private DM.
+A slash command calls its bot_commands callback → the relevant feature.
+Form submissions save through the shared database connection.
+
+When adding features, keep one Client, one CommandTree and one setup_hook. Extend
+the existing event handlers rather than registering competing copies. The dashboard
+is a separate service and receives exported snapshots; it is not another bot client.

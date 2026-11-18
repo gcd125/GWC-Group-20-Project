@@ -7,7 +7,7 @@ def connect_database(path):
     db = sqlite3.connect(Path(path).expanduser().resolve().as_uri() + '?mode=rw', uri=True)
     db.row_factory = sqlite3.Row
     columns = {row[1] for row in db.execute('PRAGMA table_info(Members)')}
-    required = {'member_id', 'first_name', 'member_dob', 'member_status', 'last_name', 'points_balance'}
+    required = {'member_id', 'first_name', 'member_dob', 'member_status', 'last_name', 'points_balance', 'major', 'phone_number', 'member_role'}
     if not required <= columns:
         db.close()
         raise ValueError('Registration database needs Members with: ' + ', '.join(sorted(required)))

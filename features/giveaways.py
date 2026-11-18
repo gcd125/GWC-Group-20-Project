@@ -200,14 +200,18 @@ class GiveawayFeature:
         for view in self.views:
             view.stop()
 
-    async def handle_interaction(self, interaction):
-        if interaction.guild is None or not self.can_host(interaction.user):
-            await interaction.response.send_message('You do not have permission to start a giveaway here.', ephemeral=True)
-            return
+    def creation_embed(self):
         embed = discord.Embed(title='🎁 Girls Who Code Giveaways', description='Ready to celebrate? Click **New Giveaway** to choose a name, prize, and how long entries stay open.', colour=0x82A7DB)
         embed.set_footer(text=FOOTER)
         if self.thumbnail():
             embed.set_thumbnail(url=self.thumbnail())
+        return embed
+
+    async def handle_interaction(self, interaction):
+        if interaction.guild is None or not self.can_host(interaction.user):
+            await interaction.response.send_message('You do not have permission to start a giveaway here.', ephemeral=True)
+            return
+        embed = self.creation_embed()
         await interaction.response.send_message(embed=embed, view=NewGiveawayView(self), ephemeral=True,
                                                 allowed_mentions=discord.AllowedMentions.none())
 
@@ -215,10 +219,7 @@ class GiveawayFeature:
         if not self.can_host(message.author):
             await message.channel.send('You do not have permission to start a giveaway.', allowed_mentions=discord.AllowedMentions.none())
             return
-        embed = discord.Embed(title='🎁 Girls Who Code Giveaways', description='Ready to celebrate? Click **New Giveaway** to choose a name, prize, and how long entries stay open.', colour=0x82A7DB)
-        embed.set_footer(text=FOOTER)
-        if self.thumbnail():
-            embed.set_thumbnail(url=self.thumbnail())
+        embed = self.creation_embed()
         await message.channel.send(embed=embed, view=NewGiveawayView(self), allowed_mentions=discord.AllowedMentions.none())
 
     async def create_from_modal(self, interaction, name, duration, prize=None):
