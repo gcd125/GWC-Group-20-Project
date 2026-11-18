@@ -26,11 +26,28 @@ stop older copies or duplicate public welcome cards can still appear.
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python seed_test_members.py
-python bot.py --test-mode
 ```
 
-The test database contains fictional members. The startup prompts privately for
+Before the first test run, create an empty `gwc_test.db` from `gwcdbbot.sql`:
+
+```sh
+python - <<'PYTHON'
+from pathlib import Path
+import sqlite3
+
+path = Path("gwc_test.db")
+with path.open("xb"):
+    pass
+with sqlite3.connect(path) as db:
+    db.executescript(Path("gwcdbbot.sql").read_text())
+PYTHON
+```
+
+This refuses to overwrite an existing file. Skip this step if your test database
+already exists. Then run `python bot.py --test-mode` and use `/registration` with
+fictional details to create test members.
+
+The startup prompts privately for
 DISCORD_TOKEN if it is not exported. Never commit tokens or real database files.
 Enable Server Members Intent and Message Content Intent in the Developer Portal.
 Install the application with bot and applications.commands scopes. Give it View
