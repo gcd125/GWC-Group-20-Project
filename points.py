@@ -18,7 +18,7 @@ def get_points(discord_id: int) -> int | None:
     
 def get_leaderboard(limit: int = 10):
     try:
-        with sqlite3.connect('leaderboard_test.db') as connection:
+        with sqlite3.connect('gwcbot.db') as connection:
             return connection.execute(
                 """
                 SELECT full_name, points_balance
