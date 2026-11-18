@@ -41,6 +41,8 @@ CREATE TABLE Events (
     event_passcode TEXT NOT NULL, 
     event_attendance_opens_at INTEGER,
     event_attendance_closes_at INTEGER,
+    event_location,
+    reminder_channel_id,
     FOREIGN KEY (event_organizer_id) REFERENCES Members(member_id), -- event organizer can only be creating by assigning at least a member
     FOREIGN KEY (event_type_id) REFERENCES Event_Types(type_id) -- corelate to previous event type table
 );
