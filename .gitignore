@@ -30,8 +30,13 @@ Thumbs.db
 # Local logs
 *.log
 
-# Local SQLite databases
+# Private runtime data and backups
 *.db
-*.db-journal
-*.db-shm
-*.db-wal
+*.db-*
+*.sqlite*
+*.backup
+*.bak
+*.pem
+*.key
+analytics*.json
+
