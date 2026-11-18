@@ -37,8 +37,8 @@ def register_commands(client: discord.Client) -> app_commands.CommandTree:
                 "Invalid or expired passcode.", ephemeral=True)
             return
 
-        event_id, event_name = event
-        is_new = record_attendance(event_id, interaction.user.id)
+        event_id, event_name, event_points = event
+        is_new = record_attendance(event_id, interaction.user.id, event_points)
 
         if is_new is None:
             await interaction.response.send_message(
@@ -174,7 +174,8 @@ def register_commands(client: discord.Client) -> app_commands.CommandTree:
             await interaction.response.send_message(
                 "Only officers can check in members.", ephemeral=True)
             return
-        if get_event(event_id) is None:
+        event = get_event(event_id)
+        if event is None:
             await interaction.response.send_message("Event not found.", ephemeral=True)
             return
         member_row = get_member(member.id)
@@ -183,7 +184,7 @@ def register_commands(client: discord.Client) -> app_commands.CommandTree:
                 "Member not registered with GWC.", ephemeral=True)
             return
 
-        updated = mark_present(member_row[0], event_id)
+        updated = mark_present(member_row[0], event_id, event[5])
         await interaction.response.send_message(
             f"✅ {member.display_name} marked present." if updated
             else "Member has not registered for this event.",
@@ -306,3 +307,8 @@ def register_commands(client: discord.Client) -> app_commands.CommandTree:
     client.setup_hook = setup_hook
 
     return tree
+
+# Called from GWCBot.setup_hook in main.py
+async def sync_commands(client, tree):
+    client.send_reminders.start()   # start the 24-hour event reminders
+    await tree.sync()               # send the slash commands to Discord

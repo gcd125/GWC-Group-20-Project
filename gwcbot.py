@@ -9,14 +9,18 @@ import sqlite3
 from zoneinfo import ZoneInfo
 
 import certifi
+from dotenv import load_dotenv
+
+# Load .env before anything reads environment variables.
+load_dotenv()
 
 # Configure CA roots before Discord/aiohttp initializes its TLS contexts.
 # Preserve an explicitly configured trust bundle (e.g. a campus CA).
 os.environ.setdefault('SSL_CERT_FILE', certifi.where())
 
 import discord
-from bot_commands import register_commands, sync_commands
-from bot_events import register_events
+from features.bot_commands import register_commands, sync_commands
+from features.bot_events import register_events
 from features.birthdays import BirthdayFeature, birthday_members, greeting
 from database import connect_database
 from features.leaderboard import LeaderboardFeature
