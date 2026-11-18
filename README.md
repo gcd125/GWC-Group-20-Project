@@ -70,7 +70,7 @@ Improve accessibility to information within our Girls Who Code server.
 - `bot_commands.py`: register_commands(client) and slash-command synchronization.
 - `bot_events.py`: register_events(client, tree) for ready, join, and message events.
 - `features/`: registration, giveaways, birthdays, leaderboard, and member linking.
-- `database.py`, `gwcdbbot.sql`: database access and schema.
+- `database/`, `gwcdbbot.sql`: database access and schema.
 - `test_*.py`: tests.
 - `dashboard/`: Insights website and export tools.
 
@@ -121,11 +121,9 @@ are global. This branch upserts commands individually so other registered comman
 are preserved. After the complete team command set is integrated, the team can
 choose bulk tree synchronization in one place.
 
-The pasted check-in, event-create and points commands depend on the team's
-`database.database_helpers` modules, which are not in this branch or shared main.
-They have not been added as broken imports or replaced with placeholders. The
-current database.py is this branch's SQLite connector; when merging the team's
-database package, move that connector into the package and update its import.
+The team's event/check-in/points command helpers still need integration.
+The database package contains the current connector and the recovered original
+registration, inspection, and export helpers.
 
 ## How the client fits together
 
@@ -148,3 +146,26 @@ Form submissions save through the shared database connection.
 When adding features, keep one Client, one CommandTree and one setup_hook. Extend
 the existing event handlers rather than registering competing copies. The dashboard
 is a separate service and receives exported snapshots; it is not another bot client.
+
+## Recovered original database work
+
+Recovered byte-for-byte from commit `434e13b`:
+
+- `database/gwcbot.sql`: original Members, Events, and Event_Participation schema.
+- `database/database_helpers/registration.py`: original registration queries and forms.
+- `database/database_helpers/check_database.py`: original member inspection queries.
+- `database/database_helpers/export_data.py`: original Excel export and queries (requires openpyxl).
+- `database/setup_database.py`: original database creation script.
+
+These files have not been executed or connected to the current bot. Their paths
+were organized, but their contents were preserved exactly. The scripts refer to
+`gwcbot.db` (and setup to `gwcbot.sql`) relative to the working directory. Do not run
+the setup script against an existing database; importing inspection/export scripts
+also runs their top-level code.
+
+`database/__init__.py` preserves the current bot's connector, so existing
+`from database import connect_database` imports still work. The current bot uses
+first_name/last_name and a separate Discord-link table; the original schema uses
+full_name and discord_id in Members. Neither schema replaces the other. A deliberate
+adapter or migration is still needed before running current features against the
+original schema. This recovery does not migrate or modify database records.
